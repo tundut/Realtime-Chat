@@ -1,13 +1,15 @@
-package com.tundut.realtime_chat.entity;
+package com.tundut.realtime_chat.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name="users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(
@@ -15,6 +17,12 @@ public class User {
     )
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
 }

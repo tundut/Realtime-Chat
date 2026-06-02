@@ -1,20 +1,32 @@
 package com.tundut.realtime_chat.controller;
 
-import com.tundut.realtime_chat.entity.User;
-import com.tundut.realtime_chat.service.UserService;
-import org.springframework.web.bind.annotation.*;
+import com.tundut.realtime_chat.dto.UserResponse;
+import com.tundut.realtime_chat.model.User;
+import com.tundut.realtime_chat.repository.UserRepository;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/me")
+    public UserResponse me(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+        return new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername());
     }
 }
