@@ -58,7 +58,7 @@ public class ConversationService {
 
                     return new ConversationResponse(
                             c.getId(),
-                            other != null ? other.getUsername() : null,
+                            other != null ? other.getUsername() : currentUsername,
                             lastMessage,
                             updatedAt);
                 })

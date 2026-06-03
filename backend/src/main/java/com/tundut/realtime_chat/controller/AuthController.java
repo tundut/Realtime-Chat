@@ -24,7 +24,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.ok(new AuthResponse("User registered successfully", null));
+        return ResponseEntity.ok(new AuthResponse("User registered successfully", request.username(), null));
     }
 
     @Operation(summary = "Login")
@@ -32,6 +32,6 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         authService.login(request);
         String token = jwtService.generateToken(request.username());
-        return ResponseEntity.ok(new AuthResponse("Login successful", token));
+        return ResponseEntity.ok(new AuthResponse("Login successful", request.username(), token));
     }
 }
