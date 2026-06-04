@@ -1,6 +1,7 @@
 package com.tundut.realtime_chat.controller;
 
 import com.tundut.realtime_chat.dto.ChatMessage;
+import com.tundut.realtime_chat.dto.MessageResponse;
 import com.tundut.realtime_chat.service.ConversationService;
 import com.tundut.realtime_chat.service.MessageService;
 
@@ -27,12 +28,16 @@ public class ChatController {
 
         @MessageMapping("/chat.private")
         public void sendPrivateMessage(ChatMessage chatMessage, Principal principal) {
+                System.out.println("Principal = " + principal);
                 User sender = userRepository.findByUsername(principal.getName())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
                 User receiver = userRepository.findByUsername(chatMessage.receiver())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
                 Conversation conversation = conversationService.getOrCreate(sender, receiver);
+
+                System.out.println("Sender: " + sender.getUsername());
+                System.out.println("Receiver: " + receiver.getUsername());
 
                 Message savedMessage = messageService.save(
                                 Message.builder()
@@ -42,12 +47,25 @@ public class ChatController {
                                                 .createdAt(LocalDateTime.now())
                                                 .build());
 
+                MessageResponse response = new MessageResponse(
+                                savedMessage.getId(),
+                                conversation.getId(),
+                                sender.getUsername(),
+                                savedMessage.getContent(),
+                                savedMessage.getCreatedAt());
+
                 conversation.setLastMessage(savedMessage);
                 conversation.setUpdatedAt(LocalDateTime.now());
                 conversationService.save(conversation);
 
-                messagingTemplate.convertAndSend(
-                                "/topic/conversation/" + conversation.getId(),
-                                savedMessage);
+                messagingTemplate.convertAndSendToUser(
+                                receiver.getUsername(),
+                                "/queue/messages",
+                                response);
+
+                messagingTemplate.convertAndSendToUser(
+                                sender.getUsername(),
+                                "/queue/messages",
+                                response);
         }
 }

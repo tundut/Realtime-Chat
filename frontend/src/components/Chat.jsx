@@ -44,7 +44,7 @@ const Chat = ({ username }) => {
                     <div className="h-full overflow-y-auto">
                         <div className="text-xl font-extrabold text-gray-600 dark:text-gray-200 p-3">
                             Chikaa
-                            {username ? <div className="text-sm font-normal text-gray-500 dark:text-gray-400 mt-1">Xin chào, {username}</div> : null}
+                            {username ? <div className="text-sm font-normal text-gray-500 dark:text-gray-400 mt-1">Hi, {username}</div> : null}
                         </div>
                         <div className="search-chat flex p-3">
                             <input className="input text-gray-700 dark:text-gray-200 text-sm p-3 focus:outline-none bg-gray-200 dark:bg-gray-700  w-full rounded-l-md" type="text" placeholder="Search Messages"/>

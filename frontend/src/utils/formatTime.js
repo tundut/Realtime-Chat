@@ -10,6 +10,11 @@ export const formatTime = (dateString) => {
     const diffMonths = Math.floor(diffDays / 30);
     const diffYears = Math.floor(diffDays / 365);
 
+    if (diffMinutes < 1) {
+        return `Just now`;
+    }
+
+
     if (diffHours < 1) {
         return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
     }

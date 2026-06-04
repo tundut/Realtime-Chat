@@ -20,9 +20,9 @@ public class MessageService {
     private MessageResponse toResponse(Message message) {
         return new MessageResponse(
                 message.getId(),
-                message.getContent(),
-                message.getSender().getId(),
+                message.getConversation().getId(),
                 message.getSender().getUsername(),
+                message.getContent(),
                 message.getCreatedAt());
     }
 

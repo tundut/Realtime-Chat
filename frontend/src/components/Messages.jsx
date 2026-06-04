@@ -1,11 +1,25 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import { getMessagesByConversationId } from '../services/messageService';
+import { getConversationById } from '../services/conversationService';
 import { formatTime } from '../utils/formatTime';
+import { connectSocket, sendMessage, disconnectSocket } from '../services/socket';
 
 const Messages = ({ conversationId }) => {
+    const messagesEndRef = useRef(null);
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [text, setText] = useState("");
+    const [conversation, setConversation] = useState({});
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth"
+        });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     useEffect(() => {
         if (!conversationId) return;
@@ -21,6 +35,38 @@ const Messages = ({ conversationId }) => {
             }
         };
         fetchData();
+    }, [conversationId]);
+
+    useEffect(() => {
+        if (!conversationId) return;
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const res = await getConversationById(conversationId);
+                setConversation(res.data);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [conversationId]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        connectSocket(token, (message) => {
+            if (Number(message.conversationId) !== Number(conversationId)) {
+                return;
+            }
+
+            setMessages(prev => [...prev, message]);
+        });
+
+        return () => {
+            disconnectSocket();
+        };
     }, [conversationId]);
 
     if (!conversationId) {
@@ -40,7 +86,7 @@ const Messages = ({ conversationId }) => {
                         <img className="w-14 h-14 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>
                     </div>
                     <div className="flex-grow p-2">
-                        <div className="text-md text-gray-50 font-semibold">Rey Jhon A. Baquirin </div>
+                        <div className="text-md text-gray-50 font-semibold">{conversation.username} </div>
                         <div className="flex items-center">
                             <div className="w-2 h-2 bg-green-300 rounded-full"></div>
                             <div className="text-xs text-gray-50 ml-1">
@@ -93,6 +139,7 @@ const Messages = ({ conversationId }) => {
                         </div>
                     )
                 })}
+                <div ref={messagesEndRef} />
             </div>
             <div className="h-15 px-2 rounded-xl rounded-tr-none rounded-tl-none bg-gray-100 dark:bg-gray-800">
                 <div className="flex items-center">
@@ -102,8 +149,20 @@ const Messages = ({ conversationId }) => {
                         </svg>
                     </div>
                     <div className="search-chat flex flex-grow px-2">
-                        <input className="input text-gray-700 dark:text-gray-200 text-sm p-5 focus:outline-none bg-gray-100 dark:bg-gray-800  flex-grow rounded-l-md" type="text" placeholder="Type your message ..."/>
-                        <div className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200  flex justify-center items-center pr-3 text-gray-400 rounded-r-md">
+                        <input 
+                            className="input text-gray-700 dark:text-gray-200 text-sm p-5 focus:outline-none bg-gray-100 dark:bg-gray-800  flex-grow rounded-l-md" 
+                            type="text" 
+                            placeholder="Type your message ..."
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                        />
+                        <div 
+                            className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200  flex justify-center items-center pr-3 text-gray-400 rounded-r-md"
+                            onClick={() => {
+                                sendMessage(conversation.username, text);
+                                setText("");
+                            }}
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                             </svg>

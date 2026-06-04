@@ -32,6 +32,12 @@ public class ConversationController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/conversation/{conversationId}")
+    public ConversationResponse getConversationById(@PathVariable Long conversationId, Principal principal) {
+        return conversationService.getConversationById(conversationId, principal.getName());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/messages/{conversationId}")
     public List<MessageResponse> getMessages(@PathVariable Long conversationId) {
         return messageService.getMessages(conversationId);

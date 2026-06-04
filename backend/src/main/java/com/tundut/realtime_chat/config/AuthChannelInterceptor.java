@@ -10,8 +10,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
-
 @Component
 @RequiredArgsConstructor
 public class AuthChannelInterceptor implements ChannelInterceptor {
@@ -23,12 +21,19 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             String authHeader = accessor.getFirstNativeHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                String username = jwtService.extractUsername(token);
-                Principal principal = () -> username;
-                accessor.setUser(principal);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Missing token");
             }
+
+            String token = authHeader.substring(7);
+            String username = jwtService.extractUsername(token);
+
+            if (username == null) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+
+            accessor.setUser(() -> username);
+
         }
         return message;
     }

@@ -21,4 +21,11 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             ORDER BY c.updatedAt ASC
             """)
     List<Conversation> findByUsername(@Param("username") String username);
+
+    @Query("""
+            SELECT c
+            FROM Conversation c
+            WHERE c.id = :conversationId
+            """)
+    Optional<Conversation> findById(@Param("conversationId") Long conversationId);
 }
