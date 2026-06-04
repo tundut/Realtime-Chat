@@ -1,8 +1,11 @@
 import React from 'react'
 import Conversation from './Conversation';
 import Messages from './Messages';
+import { useState } from 'react';
 
 const Chat = ({ username }) => {
+    const [selectedConversationId, setSelectedConversationId] = useState(null);
+
     return (
         <div className="">
             <div className="flex bg-white dark:bg-gray-900">
@@ -52,11 +55,15 @@ const Chat = ({ username }) => {
                             </div>
                         </div>
                         <div className="text-lg font-semibol text-gray-600 dark:text-gray-200 p-3">Recent</div>
-                        <Conversation/>
+                        <Conversation
+                            onSelectConversation={setSelectedConversationId}
+                        />
                     </div>
                 </div>               
                 <div className="flex-grow  h-screen p-2 rounded-md">
-                        <Messages/>
+                        <Messages
+                            conversationId={selectedConversationId}
+                        />
                 </div>
             </div>
         </div>

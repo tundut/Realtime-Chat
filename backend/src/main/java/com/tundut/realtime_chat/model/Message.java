@@ -26,5 +26,5 @@ public class Message {
     private String content;
 
     @Column(nullable = false)
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 }

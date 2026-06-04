@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ConversationItem from './ConversationItem';
 import { getConversations } from '../services/conversationService';
 import { formatTime } from '../utils/formatTime';
-const Conversation = () => {
+const Conversation = ({ onSelectConversation }) => {
 
     // const data = [
     //     {name:'Rey Jhon',time:'just now', message: 'Hey there! Are you finish creating the chat app?', active: true},
@@ -35,12 +35,14 @@ const Conversation = () => {
         <div className="p-1">
             {
                 data.map((item, index) => (
-                    <ConversationItem 
-                        key={index}
+                    <ConversationItem
+                        key={index} 
+                        id={item.conversationId}
                         message={item.lastMessage}
                         time={formatTime(item.updateAt)} 
                         name={item.username} 
                         active={true}
+                        onSelect={onSelectConversation}
                     />
                 ))
             }

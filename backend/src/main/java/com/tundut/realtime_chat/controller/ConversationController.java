@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.tundut.realtime_chat.service.ConversationService;
-import com.tundut.realtime_chat.model.Message;
 import com.tundut.realtime_chat.dto.ConversationResponse;
+import com.tundut.realtime_chat.dto.MessageResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,7 +32,7 @@ public class ConversationController {
 
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/messages/{conversationId}")
-    public List<Message> getMessages(Long conversationId) {
+    public List<MessageResponse> getMessages(Long conversationId) {
         return messageService.getMessages(conversationId);
     }
 }

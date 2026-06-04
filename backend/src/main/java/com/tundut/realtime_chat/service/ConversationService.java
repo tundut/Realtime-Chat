@@ -53,7 +53,7 @@ public class ConversationService {
                             : null;
 
                     LocalDateTime updatedAt = c.getLastMessage() != null
-                            ? c.getLastMessage().getCreateAt()
+                            ? c.getLastMessage().getCreatedAt()
                             : null;
 
                     return new ConversationResponse(

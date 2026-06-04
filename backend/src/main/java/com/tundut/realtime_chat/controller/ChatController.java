@@ -39,7 +39,7 @@ public class ChatController {
                                                 .conversation(conversation)
                                                 .sender(sender)
                                                 .content(chatMessage.content())
-                                                .createAt(LocalDateTime.now())
+                                                .createdAt(LocalDateTime.now())
                                                 .build());
 
                 conversation.setLastMessage(savedMessage);
