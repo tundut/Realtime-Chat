@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { getMessagesByConversationId } from '../services/messageService';
+import { formatTime } from '../utils/formatTime';
 
 const Messages = ({ conversationId }) => {
     const [messages, setMessages] = useState([]);
@@ -13,8 +14,6 @@ const Messages = ({ conversationId }) => {
                 setLoading(true);
                 const res = await getMessagesByConversationId(conversationId);
                 setMessages(res.data);
-                console.log(conversationId);
-                console.log(res.data);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -58,7 +57,7 @@ const Messages = ({ conversationId }) => {
             </div>
             <div className="w-full flex-grow bg-gray-100 dark:bg-gray-900 my-2 p-2 overflow-y-auto">
                 {messages.map((message) => {
-                    const isMe = sessionStorage.getItem('username') === message.sender.username;
+                    const isMe = localStorage.getItem('username') === message.senderName;
 
                     return (
                         <div
@@ -68,12 +67,12 @@ const Messages = ({ conversationId }) => {
                             {!isMe && (
                                 <div className="flex items-end w-3/4">
                                     <img className="w-8 h-8 m-3 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>  
-                                    <div className="p-3 bg-white dark:bg-gray-800  mx-3 my-1 rounded-2xl rounded-bl-none sm:w-3/4 md:w-3/6">
+                                    <div className="p-3 bg-white dark:bg-gray-800  mx-3 my-1 rounded-2xl rounded-bl-none sm:w-3/4 md:w-auto">
                                         <div className="text-gray-700 dark:text-gray-200">
                                             {message.content}
                                         </div>
-                                        <div className="text-xs text-gray-400">
-                                            {message.createdAt}
+                                        <div className="text-[10px] text-gray-500">
+                                            {formatTime(message.createdAt)}
                                         </div>
                                     </div>
                                 </div>
@@ -83,10 +82,10 @@ const Messages = ({ conversationId }) => {
                                 <div className="flex items-end w-3/4 justify-end">
                                     <div className="p-3 bg-purple-500 dark:bg-gray-800 mx-3 my-1 rounded-2xl rounded-br-none sm:w-3/4 md:w-auto">
                                         <div className="text-gray-200">
-                                            {msg.content}
+                                            {message.content}
                                         </div>
-                                        <div className="text-xs text-gray-300">
-                                            {msg.time}
+                                        <div className="text-[10px] text-gray-500">
+                                            {formatTime(message.createdAt)}
                                         </div>
                                     </div>
                                 </div>

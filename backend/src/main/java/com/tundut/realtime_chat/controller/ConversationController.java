@@ -11,6 +11,7 @@ import com.tundut.realtime_chat.dto.MessageResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 import lombok.RequiredArgsConstructor;
 
 import java.security.Principal;
@@ -32,7 +33,7 @@ public class ConversationController {
 
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/messages/{conversationId}")
-    public List<MessageResponse> getMessages(Long conversationId) {
+    public List<MessageResponse> getMessages(@PathVariable Long conversationId) {
         return messageService.getMessages(conversationId);
     }
 }

@@ -18,7 +18,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             FROM Conversation c
             JOIN c.participants p
             WHERE p.username = :username
-            ORDER BY c.updatedAt DESC
+            ORDER BY c.updatedAt ASC
             """)
     List<Conversation> findByUsername(@Param("username") String username);
 }
