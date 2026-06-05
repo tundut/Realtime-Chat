@@ -1,6 +1,7 @@
 package com.tundut.realtime_chat.controller;
 
 import com.tundut.realtime_chat.dto.ChatMessage;
+import com.tundut.realtime_chat.dto.ConversationEvent;
 import com.tundut.realtime_chat.dto.MessageResponse;
 import com.tundut.realtime_chat.service.ConversationService;
 import com.tundut.realtime_chat.service.MessageService;
@@ -67,5 +68,21 @@ public class ChatController {
                                 sender.getUsername(),
                                 "/queue/messages",
                                 response);
+
+                ConversationEvent conversationEvent = new ConversationEvent(
+                                conversation.getId(),
+                                savedMessage.getContent(),
+                                sender.getUsername(),
+                                savedMessage.getCreatedAt());
+
+                messagingTemplate.convertAndSendToUser(
+                                sender.getUsername(),
+                                "/queue/conversations",
+                                conversationEvent);
+
+                messagingTemplate.convertAndSendToUser(
+                                receiver.getUsername(),
+                                "/queue/conversations",
+                                conversationEvent);
         }
 }

@@ -1,10 +1,34 @@
 import React from 'react'
 import Conversation from './Conversation';
 import Messages from './Messages';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { getConversations } from '../services/conversationService';
 
 const Chat = ({ username }) => {
+    const [conversations, setConversations] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedConversationId, setSelectedConversationId] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await getConversations();
+            setConversations(res.data);
+        };
+    
+        fetchData();
+    }, []);
+
+    const filteredConversations = useMemo(() => {
+        if (!searchTerm.trim()) return conversations;
+
+        const lowerSearch = searchTerm.toLowerCase();
+        return conversations.filter((item) => {
+            return (
+                item.username?.toLowerCase().includes(lowerSearch) ||
+                item.lastMessage?.toLowerCase().includes(lowerSearch)
+            );
+        });
+    }, [conversations, searchTerm]);
 
     return (
         <div className="">
@@ -21,11 +45,11 @@ const Chat = ({ username }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
                         </div>
-                        <div className="py-4 hover:text-gray-700 flex flex-col items-center justify-center text-blue-600">
+                        <div className="py-4 hover:text-gray-700 flex flex-col items-center justify-center" style={{color: '#a855f7'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
-                            <div className="w-2 h-2 bg-blue-800 rounded-full"></div>
+                            <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#a855f7'}}></div>
                         </div>
                         <div className="py-4 hover:text-gray-700">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -47,7 +71,13 @@ const Chat = ({ username }) => {
                             {username ? <div className="text-sm font-normal text-gray-500 dark:text-gray-400 mt-1">Hi, {username}</div> : null}
                         </div>
                         <div className="search-chat flex p-3">
-                            <input className="input text-gray-700 dark:text-gray-200 text-sm p-3 focus:outline-none bg-gray-200 dark:bg-gray-700  w-full rounded-l-md" type="text" placeholder="Search Messages"/>
+                            <input
+                                className="input text-gray-700 dark:text-gray-200 text-sm p-3 focus:outline-none bg-gray-200 dark:bg-gray-700  w-full rounded-l-md"
+                                type="text"
+                                placeholder="Search User"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                             <div className="bg-gray-200 dark:bg-gray-700 flex justify-center items-center pr-3 text-gray-400 rounded-r-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -55,14 +85,22 @@ const Chat = ({ username }) => {
                             </div>
                         </div>
                         <div className="text-lg font-semibol text-gray-600 dark:text-gray-200 p-3">Recent</div>
-                        <Conversation
-                            onSelectConversation={setSelectedConversationId}
-                        />
+                        {filteredConversations.length > 0 ? (
+                            <Conversation
+                                conversations={filteredConversations}
+                                onSelectConversation={setSelectedConversationId}
+                            />
+                        ) : (
+                            <div className="text-sm text-gray-500 dark:text-gray-400 px-3">
+                                Không tìm thấy người dùng phù hợp.
+                            </div>
+                        )}
                     </div>
                 </div>               
                 <div className="flex-grow  h-screen p-2 rounded-md">
                         <Messages
                             conversationId={selectedConversationId}
+                            setConversations={setConversations}
                         />
                 </div>
             </div>

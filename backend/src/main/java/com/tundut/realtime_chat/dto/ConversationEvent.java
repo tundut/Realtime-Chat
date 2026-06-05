@@ -2,9 +2,8 @@ package com.tundut.realtime_chat.dto;
 
 import java.time.LocalDateTime;
 
-public record ConversationResponse(
+public record ConversationEvent(
         Long conversationId,
-        String username,
         String lastMessage,
         String lastMessageSenderName,
         LocalDateTime updateAt) {

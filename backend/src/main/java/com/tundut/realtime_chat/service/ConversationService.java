@@ -52,6 +52,10 @@ public class ConversationService {
                                                         ? c.getLastMessage().getContent()
                                                         : null;
 
+                                        String lastMessageSenderName = c.getLastMessage() != null
+                                                        ? c.getLastMessage().getSender().getUsername()
+                                                        : null;
+
                                         LocalDateTime updatedAt = c.getLastMessage() != null
                                                         ? c.getLastMessage().getCreatedAt()
                                                         : null;
@@ -60,6 +64,7 @@ public class ConversationService {
                                                         c.getId(),
                                                         other != null ? other.getUsername() : currentUsername,
                                                         lastMessage,
+                                                        lastMessageSenderName,
                                                         updatedAt);
                                 })
                                 .toList();
@@ -80,6 +85,10 @@ public class ConversationService {
                                                         ? c.getLastMessage().getContent()
                                                         : null;
 
+                                        String lastMessageSenderName = c.getLastMessage() != null
+                                                        ? c.getLastMessage().getSender().getUsername()
+                                                        : null;
+
                                         LocalDateTime updatedAt = c.getLastMessage() != null
                                                         ? c.getLastMessage().getCreatedAt()
                                                         : null;
@@ -88,6 +97,7 @@ public class ConversationService {
                                                         c.getId(),
                                                         other != null ? other.getUsername() : currentUsername,
                                                         lastMessage,
+                                                        lastMessageSenderName,
                                                         updatedAt);
                                 })
                                 .orElse(null);

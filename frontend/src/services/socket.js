@@ -3,7 +3,7 @@ import SockJS from "sockjs-client";
 
 let client = null;
 
-export const connectSocket = (token, onMessage) => {
+export const connectSocket = (token, onMessage, onConversation) => {
     client = new Client({
         webSocketFactory: () =>
             new SockJS("http://localhost:8080/ws"),
@@ -15,16 +15,15 @@ export const connectSocket = (token, onMessage) => {
         onConnect: () => {
             console.log("Connected");
 
-            client.subscribe(
-                "/user/queue/messages",
-                (message) => {
-                    const data = JSON.parse(message.body);
+            client.subscribe("/user/queue/messages", (message) => {
+                const data = JSON.parse(message.body);
+                onMessage?.(data);
+            });
 
-                    console.log("Received:", data);
-
-                    onMessage?.(data);
-                }
-            );
+            client.subscribe("/user/queue/conversations", (message) => {
+                const data = JSON.parse(message.body);
+                onConversation?.(data);
+            });
         },
 
         onStompError: (frame) => {

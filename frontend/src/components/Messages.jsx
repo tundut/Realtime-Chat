@@ -4,12 +4,12 @@ import { getConversationById } from '../services/conversationService';
 import { formatTime } from '../utils/formatTime';
 import { connectSocket, sendMessage, disconnectSocket } from '../services/socket';
 
-const Messages = ({ conversationId }) => {
+const Messages = ({ conversationId, setConversations }) => {
     const messagesEndRef = useRef(null);
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
-    const [conversation, setConversation] = useState({});
+    const [selectedConversationId, setSelectedConversationId] = useState({});
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({
@@ -43,7 +43,7 @@ const Messages = ({ conversationId }) => {
             try {
                 setLoading(true);
                 const res = await getConversationById(conversationId);
-                setConversation(res.data);
+                setSelectedConversationId(res.data);
             } catch (err) {
                 console.log(err);
             } finally {
@@ -56,13 +56,52 @@ const Messages = ({ conversationId }) => {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        connectSocket(token, (message) => {
-            if (Number(message.conversationId) !== Number(conversationId)) {
-                return;
-            }
+        connectSocket(
+            token,
 
-            setMessages(prev => [...prev, message]);
-        });
+            // message event
+            (message) => {
+                if (
+                    Number(message.conversationId) !==
+                    Number(conversationId)
+                ) {
+                    return;
+                }
+
+                setMessages(prev => [...prev, message]);
+            },
+
+            // conversation event
+            (conversationEvent) => {
+                setConversations(prev => {
+                    const updated = prev.map(c =>
+                        c.conversationId === conversationEvent.conversationId
+                            ? {
+                                ...c,
+                                lastMessage: conversationEvent.lastMessage,
+                                lastMessageSenderName: conversationEvent.lastMessageSenderName,
+                                updateAt: conversationEvent.updateAt
+                            }
+                            : c
+                    );
+
+                    const current = updated.find(
+                        c =>
+                            c.conversationId ===
+                            conversationEvent.conversationId
+                    );
+
+                    return [
+                        current,
+                        ...updated.filter(
+                            c =>
+                                c.conversationId !==
+                                conversationEvent.conversationId
+                        )
+                    ];
+                })
+            }
+        );
 
         return () => {
             disconnectSocket();
@@ -86,7 +125,7 @@ const Messages = ({ conversationId }) => {
                         <img className="w-14 h-14 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>
                     </div>
                     <div className="flex-grow p-2">
-                        <div className="text-md text-gray-50 font-semibold">{conversation.username} </div>
+                        <div className="text-md text-gray-50 font-semibold">{selectedConversationId.username} </div>
                         <div className="flex items-center">
                             <div className="w-2 h-2 bg-green-300 rounded-full"></div>
                             <div className="text-xs text-gray-50 ml-1">
@@ -155,11 +194,17 @@ const Messages = ({ conversationId }) => {
                             placeholder="Type your message ..."
                             value={text}
                             onChange={(e) => setText(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        sendMessage(selectedConversationId.username, text);
+                                        setText("");
+                                    }
+                            }}
                         />
                         <div 
                             className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200  flex justify-center items-center pr-3 text-gray-400 rounded-r-md"
                             onClick={() => {
-                                sendMessage(conversation.username, text);
+                                sendMessage(selectedConversationId.username, text);
                                 setText("");
                             }}
                         >
