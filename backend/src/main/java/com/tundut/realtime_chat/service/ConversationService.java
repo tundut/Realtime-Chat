@@ -38,35 +38,37 @@ public class ConversationService {
                                 });
         }
 
+        public ConversationResponse toConversationResponse(Conversation c, String currentUsername) {
+                User other = c.getParticipants()
+                                .stream()
+                                .filter(p -> !p.getUsername().equals(currentUsername))
+                                .findFirst()
+                                .orElse(null);
+
+                String lastMessage = c.getLastMessage() != null
+                                ? c.getLastMessage().getContent()
+                                : null;
+
+                String lastMessageSenderName = c.getLastMessage() != null
+                                ? c.getLastMessage().getSender().getUsername()
+                                : null;
+
+                LocalDateTime updatedAt = c.getLastMessage() != null
+                                ? c.getLastMessage().getCreatedAt()
+                                : null;
+
+                return new ConversationResponse(
+                                c.getId(),
+                                other != null ? other.getUsername() : currentUsername,
+                                lastMessage,
+                                lastMessageSenderName,
+                                updatedAt);
+        }
+
         public List<ConversationResponse> getConversations(String currentUsername) {
                 return conversationRepository.findByUsername(currentUsername)
                                 .stream()
-                                .map(c -> {
-                                        User other = c.getParticipants()
-                                                        .stream()
-                                                        .filter(p -> !p.getUsername().equals(currentUsername))
-                                                        .findFirst()
-                                                        .orElse(null);
-
-                                        String lastMessage = c.getLastMessage() != null
-                                                        ? c.getLastMessage().getContent()
-                                                        : null;
-
-                                        String lastMessageSenderName = c.getLastMessage() != null
-                                                        ? c.getLastMessage().getSender().getUsername()
-                                                        : null;
-
-                                        LocalDateTime updatedAt = c.getLastMessage() != null
-                                                        ? c.getLastMessage().getCreatedAt()
-                                                        : null;
-
-                                        return new ConversationResponse(
-                                                        c.getId(),
-                                                        other != null ? other.getUsername() : currentUsername,
-                                                        lastMessage,
-                                                        lastMessageSenderName,
-                                                        updatedAt);
-                                })
+                                .map(c -> toConversationResponse(c, currentUsername))
                                 .toList();
         }
 
@@ -74,32 +76,7 @@ public class ConversationService {
                         Long conversationId,
                         String currentUsername) {
                 return conversationRepository.findById(conversationId)
-                                .map(c -> {
-                                        User other = c.getParticipants()
-                                                        .stream()
-                                                        .filter(p -> !p.getUsername().equals(currentUsername))
-                                                        .findFirst()
-                                                        .orElse(null);
-
-                                        String lastMessage = c.getLastMessage() != null
-                                                        ? c.getLastMessage().getContent()
-                                                        : null;
-
-                                        String lastMessageSenderName = c.getLastMessage() != null
-                                                        ? c.getLastMessage().getSender().getUsername()
-                                                        : null;
-
-                                        LocalDateTime updatedAt = c.getLastMessage() != null
-                                                        ? c.getLastMessage().getCreatedAt()
-                                                        : null;
-
-                                        return new ConversationResponse(
-                                                        c.getId(),
-                                                        other != null ? other.getUsername() : currentUsername,
-                                                        lastMessage,
-                                                        lastMessageSenderName,
-                                                        updatedAt);
-                                })
+                                .map(c -> toConversationResponse(c, currentUsername))
                                 .orElse(null);
         }
 }

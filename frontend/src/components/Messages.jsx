@@ -1,3 +1,4 @@
+import avatar from "../assets/avatar.png";
 import React, { useEffect, useRef, useState } from 'react';
 import { getMessagesByConversationId } from '../services/messageService';
 import { getConversationById } from '../services/conversationService';
@@ -122,7 +123,7 @@ const Messages = ({ conversationId, setConversations }) => {
                         </svg>
                     </div>
                     <div className="border rounded-full border-white p-1/2">
-                        <img className="w-14 h-14 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>
+                        <img className="w-14 h-14 rounded-full" src={ avatar } alt="avatar"/>
                     </div>
                     <div className="flex-grow p-2">
                         <div className="text-md text-gray-50 font-semibold">{selectedConversationId.username} </div>
@@ -151,7 +152,7 @@ const Messages = ({ conversationId, setConversations }) => {
                         >
                             {!isMe && (
                                 <div className="flex items-end w-3/4">
-                                    <img className="w-8 h-8 m-3 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>  
+                                    <img className="w-8 h-8 m-3 rounded-full" src={ avatar } alt="avatar"/>  
                                     <div className="p-3 bg-white dark:bg-gray-800  mx-3 my-1 rounded-2xl rounded-bl-none sm:w-3/4 md:w-auto">
                                         <div className="text-gray-700 dark:text-gray-200">
                                             {message.content}
@@ -229,7 +230,7 @@ const Messages = ({ conversationId, setConversations }) => {
     //                     </svg>
     //                 </div>
     //                 <div className="border rounded-full border-white p-1/2">
-    //                     <img className="w-14 h-14 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>
+    //                     <img className="w-14 h-14 rounded-full" src={ avatar } alt="avatar"/>
     //                 </div>
     //                 <div className="flex-grow p-2">
     //                     <div className="text-md text-gray-50 font-semibold">Rey Jhon A. Baquirin </div>
@@ -249,7 +250,7 @@ const Messages = ({ conversationId, setConversations }) => {
     //         </div>
     //         <div className="w-full flex-grow bg-gray-100 dark:bg-gray-900 my-2 p-2 overflow-y-auto">
     //             <div className="flex items-end w-3/4" >
-    //                 <img className="hidden w-8 h-8 m-3 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>  
+    //                 <img className="hidden w-8 h-8 m-3 rounded-full" src={ avatar } alt="avatar"/>  
     //                 <div className="w-8 m-3 rounded-full"/>
     //                 <div className="p-3 bg-purple-300 dark:bg-gray-800 mx-3 my-1 rounded-2xl rounded-bl-none sm:w-3/4 md:w-3/6">
     //                     <div className="text-xs text-gray-600 dark:text-gray-200">
@@ -264,7 +265,7 @@ const Messages = ({ conversationId, setConversations }) => {
     //                 </div>
     //             </div>
     //             <div className="flex items-end w-3/4">
-    //                 <img className="w-8 h-8 m-3 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>  
+    //                 <img className="w-8 h-8 m-3 rounded-full" src={ avatar } alt="avatar"/>  
     //                 <div className="p-3 bg-purple-300 dark:bg-gray-800  mx-3 my-1 rounded-2xl rounded-bl-none sm:w-3/4 md:w-3/6">
     //                     <div className="text-xs text-gray-100 hidden dark:text-gray-200">
     //                         Rey Jhon A. Baqurin
@@ -306,7 +307,7 @@ const Messages = ({ conversationId, setConversations }) => {
     //                 </div>
     //             </div>
     //             <div className="flex items-end w-3/4">
-    //                 <img className="w-8 h-8 m-3 rounded-full" src="https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_960_720.png" alt="avatar"/>  
+    //                 <img className="w-8 h-8 m-3 rounded-full" src={ avatar } alt="avatar"/>  
     //                 <div className="p-3 bg-purple-300 dark:bg-gray-800 mx-3 my-1 rounded-2xl rounded-bl-none sm:w-3/4 md:w-3/6">
     //                     <div className="text-xs text-gray-100 hidden dark:text-gray-200">
     //                         Rey Jhon A. Baqurin

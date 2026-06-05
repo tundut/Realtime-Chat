@@ -10,7 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,5 +34,20 @@ public class UserController {
                 user.getId(),
                 user.getEmail(),
                 user.getUsername());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/search")
+    public List<UserResponse> search(@RequestParam String q, Authentication authentication) {
+        String currentUsername = authentication.getName();
+        if (q == null || q.trim().isEmpty()) {
+            return List.of();
+        }
+
+        return userRepository.findByUsernameContainingIgnoreCase(q.trim())
+                .stream()
+                .filter(user -> !user.getUsername().equals(currentUsername))
+                .map(user -> new UserResponse(user.getId(), user.getEmail(), user.getUsername()))
+                .collect(Collectors.toList());
     }
 }

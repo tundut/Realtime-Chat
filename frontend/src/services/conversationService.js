@@ -7,3 +7,9 @@ export const getConversations = () => {
 export const getConversationById = (conversationId) => {
   return axiosClient.get(`/conversation/${conversationId}`);
 };
+
+export const createConversation = (username) => {
+  return axiosClient.post(`/conversation`, null, {
+    params: { username },
+  });
+};
